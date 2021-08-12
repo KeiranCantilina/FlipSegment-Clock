@@ -29,6 +29,8 @@ void setup() {
   wifiManager.autoConnect("FlipDigit_Clock", "password");
   Serial.println("WiFi connected! Yay");
 
+  // Timeserver init stuff here
+
 }
 
 void loop() {
