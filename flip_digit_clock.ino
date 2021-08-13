@@ -85,6 +85,37 @@ int get_MinutesTensPlace(){
   
 }
 
-byte numberToDigitPattern(int number){
-  
+byte numberToSegmentPattern(int number){
+/*    1
+      _
+   6 | | 2
+   7  - 
+   5 | | 3
+      -
+      4
+*/
+  switch (number%10){
+    case 0:
+      return B0111111;
+    case 1:
+      return B0000110;
+    case 2:
+      return B1011011;
+    case 3:
+      return B1001111;
+    case 4:
+      return B1100110;
+    case 5:
+      return B1101101;
+    case 6:
+      return B1111101;
+    case 7:
+      return B0000111;
+    case 8:
+      return B1111111;
+    case 9:
+      return B1100111;
+    default:
+      return B0000000;
+  }
 }
