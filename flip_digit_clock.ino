@@ -10,6 +10,12 @@
 
 // Create an ESP8266 WiFiClient class to connect to the MQTT server.
 WiFiClient client;
+WiFiUDP ntpUDP;
+
+// You can specify the time server pool and the offset (in seconds, can be
+// changed later with setTimeOffset() ). Additionally you can specify the
+// update interval (in milliseconds, can be changed using setUpdateInterval() ).
+NTPClient timeClient(ntpUDP, "us.pool.ntp.org", 0, 60000); // UTC Time
 
 void setup() {
   // Debug serial
@@ -30,7 +36,7 @@ void setup() {
   Serial.println("WiFi connected! Yay");
 
   // Timeserver init stuff here
-
+  Serial.println("Current timestamp is: " + current_timestamp() + "\n");
 }
 
 void loop() {
@@ -44,4 +50,41 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(WiFi.softAPIP());
   // Placeholder for future callback code here (debug, maybe)
   Serial.println(myWiFiManager->getConfigPortalSSID());
+}
+
+// Get NTP time and convert to timestamp
+String current_timestamp(){
+  time_t utcCalc = timeClient.getEpochTime();
+  return String(hour(utcCalc)) + ":" + String(minute(utcCalc)) + ":" + String(second(utcCalc)) + " UTC on " + String(day(utcCalc)) + " " + monthString(month(utcCalc)) + " " + String(year(utcCalc));
+}
+
+// Convert integer month to word month
+String monthString(int monthInt){
+  String monthStringArray[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+  for (int i = 1; i<13; i++){
+    if(monthInt == i){
+      return monthStringArray[i-1];
+    }
+  }
+  return "MONTH ERROR";
+}
+
+int get_HourOnesPlace(){
+  
+}
+
+int get_HourTensPlace(){
+  
+}
+
+int get_MinutesOnesPlace(){
+  
+}
+
+int get_MinutesTensPlace(){
+  
+}
+
+byte numberToDigitPattern(int number){
+  
 }
