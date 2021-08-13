@@ -1,3 +1,6 @@
+// TODO: Figure out how to handle setting time manually, and/or how to handle loss of wifi/connection to time servers
+
+// Libraries
 #include <SoftwareSerial.h>
 #include <TimeLib.h>
 #include <ESP8266WiFi.h>  
@@ -7,6 +10,15 @@
 #include <WiFiManager.h>
 #include <NTPClient.h>
 
+// Software serial pins for comms with display modules
+#define DEVICE_0 12
+#define DEVICE_1 13
+#define DEVICE_1 13
+#define DEVICE_1 13
+
+// Pins for spoofing display modules buttons
+#define BUTTON1PIN 13
+#define BUTTON2PIN 14
 
 // Create an ESP8266 WiFiClient class to connect to the MQTT server.
 WiFiClient client;
@@ -18,12 +30,23 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "us.pool.ntp.org", 0, 60000); // UTC Time
 
 void setup() {
+  
+  // Init button spoofing pins ("on" might be high or low, gotta test. Should be initialized to off)
+  pinMode(BUTTON1PIN, OUTPUT);
+  pinMode(BUTTON2PIN, OUTPUT);
+  digitalWrite(BUTTON1PIN, HIGH);
+  digitalWrite(BUTTON2PIN, HIGH);
+  
   // Debug serial
   Serial.begin(115200);
   delay(10);
   Serial.println(F("Keiran's FlipDigit Clock"));
   
   // Softserial init to display modules here
+  // Hours 10s digit module serial init (device 0)
+  // Hours 1s digit module serial init (device 1)
+  // Minutes 10s digit module serial init (device 2)
+  // Minutes 1s digit module serial init (device 3)
 
   // Initialize WifiManager captive portal
   WiFiManager wifiManager;
@@ -117,5 +140,46 @@ byte numberToSegmentPattern(int number){
       return B1100111;
     default:
       return B0000000;
+  }
+}
+
+void initializeDisplayModule(){
+  // May be possible to have all button1s and all button2s on every module connected together
+
+  // Hold both buttons down for 2 seconds to enter mode change mode
+  digitalWrite(BUTTON1PIN, LOW);
+  digitalWrite(BUTTON2PIN, LOW);
+  delay(2000);
+  digitalWrite(BUTTON1PIN, HIGH);
+  digitalWrite(BUTTON2PIN, HIGH);
+  delay(1000);
+
+  // Press button 2 until module is in external control mode (mode 7)
+  for (int i=1, i<7, i++){
+    digitalWrite(BUTTON2PIN, LOW);
+    delay(100);
+    digitalWrite(BUTTON2PIN, HIGH);
+    delay(1000);
+  }
+
+  // Press button 1 to leave mode change mode
+  digitalWrite(BUTTON1PIN, LOW);
+  delay(100);
+  digitalWrite(BUTTON1PIN, HIGH);
+  delay(1000);
+}
+
+void blank_display(int device_number){
+  switch (device_number){
+    case 0:
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    default:
+      break;
   }
 }
